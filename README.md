@@ -5,28 +5,46 @@ Automated data pipeline for German electricity generation (wind, solar) and day-
 
 ### Solar pushes the day-ahead price down to zero (21 September 2026)
 
-Query used in BigQuery:
+![Day-ahead price vs. wind and solar generation in Germany, 21 September 2026](docs/images/price_vs_solar_2026-09-21.png)
+
+**Findings** (all times in Berlin time):
+- From **11:45 to 15:45**, the day-ahead price stayed **below 1 €/MWh** for 4 hours in a row, including **105 minutes at exactly 0 €/MWh** between 13:00 and 15:15.
+- This window matches the **solar peak**: solar generation stayed between 29 and 37 GW, with a maximum of **36,814 MW at 13:15**.
+- The most expensive moments came **when solar was absent**: **257.09 €/MWh at 08:00** (morning peak) and **275.90 €/MWh at 19:45** (evening peak, solar at 0 MW). Four of the five most expensive quarter-hours were in the evening.
+- The spread between the cheapest and the most expensive quarter-hour reached **almost 276 €/MWh within a single day**.
+
+**Why it matters:**
+Wind and solar have near-zero marginal costs. When they cover most of the demand, expensive gas and coal plants are no longer needed and the price collapses (merit order effect). As soon as the sun sets, demand is still high but solar is gone, and prices spike. These daily price spreads are what batteries, smart charging and flexible consumption can take advantage of: storing or using electricity when it is cheap, and avoiding the expensive hours.
+
+**Queries used in BigQuery:**
 
 ```sql
+-- Quarter-hours with a price below 5 €/MWh
 SELECT
   DATETIME(timestamp_utc, "Europe/Berlin") AS time_berlin,
   solar_mw,
   price_eur_mwh
 FROM `tatiana-energy-pipeline.energy.generation_prices`
-ORDER BY price_eur_mwh
+WHERE price_eur_mwh < 5
+ORDER BY time_berlin;
+
+-- Time window and duration at a price of 0 €/MWh or below
+SELECT
+  MIN(DATETIME(timestamp_utc, "Europe/Berlin")) AS first_zero_price,
+  MAX(DATETIME(timestamp_utc, "Europe/Berlin")) AS last_zero_price,
+  COUNT(*) * 15 AS minutes_at_zero_or_below
+FROM `tatiana-energy-pipeline.energy.generation_prices`
+WHERE price_eur_mwh <= 0;
+
+-- Five most expensive quarter-hours
+SELECT
+  DATETIME(timestamp_utc, "Europe/Berlin") AS time_berlin,
+  solar_mw,
+  price_eur_mwh
+FROM `tatiana-energy-pipeline.energy.generation_prices`
+ORDER BY price_eur_mwh DESC
 LIMIT 5;
 ```
-
-**Findings:**
-- Between **13:00 and 14:00 (Berlin time)**, the day-ahead price dropped to **0 €/MWh**.
-- This matches the **solar peak**: 36,814 MW at 13:15, when wind and solar together produced about 60 GW.
-- In contrast, the price reached **194 €/MWh around 07:30** (morning demand peak, before solar ramps up), and stayed around **40 €/MWh at night**.
-
-![Day-ahead price vs. wind and solar generation in Germany, 21 September 2026](docs/images/price_vs_solar_2026-09-21.png)
-
-**Why it matters:**
-Wind and solar have near-zero marginal costs. When they cover most of the demand, expensive gas and coal plants are no longer needed and the price collapses (merit order effect). These daily price spreads are what batteries, smart charging and flexible consumption can take advantage of: storing or using electricity when it is cheap, and avoiding the expensive hours.
-
 
 ## Documentation & References
 
