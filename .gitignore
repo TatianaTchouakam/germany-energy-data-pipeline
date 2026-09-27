@@ -222,3 +222,7 @@ data/
 
 # Editor settings
 .vscode/
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
