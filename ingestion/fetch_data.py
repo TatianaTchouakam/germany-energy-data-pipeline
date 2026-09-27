@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pandas as pd
 import requests
+from load_to_gcp import load_to_bigquery, upload_to_gcs
 
 BASE_URL = "https://api.energy-charts.info"
 
@@ -59,6 +60,12 @@ def main():
         default=str(date.today() - timedelta(days=1)),
         help="Day to fetch, format YYYY-MM-DD (default: yesterday)",
     )
+    parser.add_argument(
+        "--upload",
+        action="store_true",
+        help="Also upload the file to Cloud Storage and load it into BigQuery",
+    )
+    
     args = parser.parse_args()
 
     df = build_table(args.date)
@@ -70,7 +77,15 @@ def main():
 
     print(f"Saved {len(df)} rows to {file_path}")
     print(df.head())
-
+    
+    if args.upload:
+        gcs_uri = upload_to_gcs(file_path)
+        rows = load_to_bigquery(
+            gcs_uri,
+            int(df["unix_seconds"].min()),
+            int(df["unix_seconds"].max()),
+        )
+        print(f"Uploaded to {gcs_uri} and loaded {rows} rows into BigQuery")
 
 if __name__ == "__main__":
     main()
