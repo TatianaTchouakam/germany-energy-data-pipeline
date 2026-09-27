@@ -22,6 +22,8 @@ LIMIT 5;
 - This matches the **solar peak**: 36,814 MW at 13:15, when wind and solar together produced about 60 GW.
 - In contrast, the price reached **194 €/MWh around 07:30** (morning demand peak, before solar ramps up), and stayed around **40 €/MWh at night**.
 
+![Day-ahead price vs. wind and solar generation in Germany, 21 September 2026](docs/images/price_vs_solar_2026-09-21.png)
+
 **Why it matters:**
 Wind and solar have near-zero marginal costs. When they cover most of the demand, expensive gas and coal plants are no longer needed and the price collapses (merit order effect). These daily price spreads are what batteries, smart charging and flexible consumption can take advantage of: storing or using electricity when it is cheap, and avoiding the expensive hours.
 
