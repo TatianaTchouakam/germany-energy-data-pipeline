@@ -59,3 +59,12 @@ Wind and solar have near-zero marginal costs. When they cover most of the demand
 - [BigQuery DATETIME function](https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime) – converting UTC to Berlin time
 - [BigQuery query syntax (SELECT, ORDER BY, LIMIT)](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax)
 - [BigQuery pricing](https://cloud.google.com/bigquery/pricing) – on-demand queries, first 1 TiB per month free
+
+
+### Visualization
+- [pandas.read_csv](https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html) – reading the processed CSV with `parse_dates`
+- [matplotlib fill_between](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.fill_between.html) – solar area under the curve
+- [matplotlib twinx](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.twinx.html) – second y-axis for the price
+- [matplotlib DateFormatter](https://matplotlib.org/stable/api/dates_api.html#matplotlib.dates.DateFormatter) – hours on the x-axis in Berlin time
+- [matplotlib savefig](https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.savefig.html) – exporting the chart as PNG
+- [Images in GitHub Markdown](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#images) – embedding the chart in this README
