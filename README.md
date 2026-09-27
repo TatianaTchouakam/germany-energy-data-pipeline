@@ -16,35 +16,10 @@ Automated data pipeline for German electricity generation (wind, solar) and day-
 **Why it matters:**
 Wind and solar have near-zero marginal costs. When they cover most of the demand, expensive gas and coal plants are no longer needed and the price collapses (merit order effect). As soon as the sun sets, demand is still high but solar is gone, and prices spike. These daily price spreads are what batteries, smart charging and flexible consumption can take advantage of: storing or using electricity when it is cheap, and avoiding the expensive hours.
 
-**Queries used in BigQuery:**
-
-```sql
--- Quarter-hours with a price below 5 €/MWh
-SELECT
-  DATETIME(timestamp_utc, "Europe/Berlin") AS time_berlin,
-  solar_mw,
-  price_eur_mwh
-FROM `tatiana-energy-pipeline.energy.generation_prices`
-WHERE price_eur_mwh < 5
-ORDER BY time_berlin;
-
--- Time window and duration at a price of 0 €/MWh or below
-SELECT
-  MIN(DATETIME(timestamp_utc, "Europe/Berlin")) AS first_zero_price,
-  MAX(DATETIME(timestamp_utc, "Europe/Berlin")) AS last_zero_price,
-  COUNT(*) * 15 AS minutes_at_zero_or_below
-FROM `tatiana-energy-pipeline.energy.generation_prices`
-WHERE price_eur_mwh <= 0;
-
--- Five most expensive quarter-hours
-SELECT
-  DATETIME(timestamp_utc, "Europe/Berlin") AS time_berlin,
-  solar_mw,
-  price_eur_mwh
-FROM `tatiana-energy-pipeline.energy.generation_prices`
-ORDER BY price_eur_mwh DESC
-LIMIT 5;
-```
+**Queries used in BigQuery:** see [`sql/`](sql/)
+- [`cheap_quarter_hours.sql`](sql/cheap_quarter_hours.sql) – quarter-hours below 5 €/MWh
+- [`zero_price_window.sql`](sql/zero_price_window.sql) – time window and duration at 0 €/MWh
+- [`most_expensive_quarter_hours.sql`](sql/most_expensive_quarter_hours.sql) – five most expensive quarter-hours
 
 ## Documentation & References
 
