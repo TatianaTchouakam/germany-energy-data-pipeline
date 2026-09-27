@@ -1,6 +1,30 @@
 # germany-energy-data-pipeline
 Automated data pipeline for German electricity generation (wind, solar) and day-ahead prices, built on Google Cloud with Terraform, BigQuery and Cloud Run
 
+## Key Insights
+
+### Solar pushes the day-ahead price down to zero (21 September 2026)
+
+Query used in BigQuery:
+
+```sql
+SELECT
+  DATETIME(timestamp_utc, "Europe/Berlin") AS time_berlin,
+  solar_mw,
+  price_eur_mwh
+FROM `tatiana-energy-pipeline.energy.generation_prices`
+ORDER BY price_eur_mwh
+LIMIT 5;
+```
+
+**Findings:**
+- Between **13:00 and 14:00 (Berlin time)**, the day-ahead price dropped to **0 €/MWh**.
+- This matches the **solar peak**: 36,814 MW at 13:15, when wind and solar together produced about 60 GW.
+- In contrast, the price reached **194 €/MWh around 07:30** (morning demand peak, before solar ramps up), and stayed around **40 €/MWh at night**.
+
+**Why it matters:**
+Wind and solar have near-zero marginal costs. When they cover most of the demand, expensive gas and coal plants are no longer needed and the price collapses (merit order effect). These daily price spreads are what batteries, smart charging and flexible consumption can take advantage of: storing or using electricity when it is cheap, and avoiding the expensive hours.
+
 
 ## Documentation & References
 
@@ -31,3 +55,5 @@ Automated data pipeline for German electricity generation (wind, solar) and day-
 - [Loading CSV data from Cloud Storage](https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-csv)
 - [bq load reference](https://cloud.google.com/bigquery/docs/reference/bq-cli-reference#bq_load)
 - [BigQuery DATETIME function](https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime) – converting UTC to Berlin time
+- [BigQuery query syntax (SELECT, ORDER BY, LIMIT)](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax)
+- [BigQuery pricing](https://cloud.google.com/bigquery/pricing) – on-demand queries, first 1 TiB per month free
