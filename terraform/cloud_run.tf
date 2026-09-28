@@ -42,7 +42,7 @@ resource "google_cloud_run_v2_job" "fetch_data" {
       timeout         = "600s"
 
       containers {
-        image = "europe-west3-docker.pkg.dev/${var.project_id}/energy-pipeline/fetch-data:v1"
+        image = "europe-west3-docker.pkg.dev/${var.project_id}/energy-pipeline/fetch-data:${var.image_tag}"
 
         resources {
           limits = {

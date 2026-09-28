@@ -9,3 +9,8 @@ variable "region" {
   type        = string
   default     = "europe-west3"
 }
+variable "image_tag" {
+  description = "Version of the pipeline container image to deploy"
+  type        = string
+  default     = "v2"
+}
