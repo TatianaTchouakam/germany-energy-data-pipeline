@@ -3,6 +3,7 @@
 Data source: Energy-Charts.info (Fraunhofer ISE), license CC BY 4.0.
 """
 import argparse
+import time
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -18,11 +19,26 @@ GENERATION_COLUMNS = {
     "Solar": "solar_mw",
 }
 
+MAX_ATTEMPTS = 5
+
+
 def fetch_json(endpoint, params):
-    """Call one Energy-Charts endpoint and return its JSON answer."""
-    response = requests.get(f"{BASE_URL}/{endpoint}", params=params, timeout=30)
+    """Call one Energy-Charts endpoint and return its JSON answer.
+
+    Retries with increasing waits when the API says we are too fast (HTTP 429).
+    """
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        response = requests.get(f"{BASE_URL}/{endpoint}", params=params, timeout=30)
+        if response.status_code != 429:
+            response.raise_for_status()
+            return response.json()
+
+        retry_after = response.headers.get("Retry-After", "")
+        wait_seconds = int(retry_after) if retry_after.isdigit() else 10 * attempt
+        print(f"Rate limited by the API, waiting {wait_seconds}s (attempt {attempt}/{MAX_ATTEMPTS})")
+        time.sleep(wait_seconds)
+
     response.raise_for_status()
-    return response.json()
 
 
 def fetch_prices(day):
