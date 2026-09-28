@@ -13,8 +13,10 @@ flowchart LR
     A[Energy-Charts API<br/>Fraunhofer ISE] -->|prices, wind, solar| B[Cloud Run Job<br/>Python container]
     S[Cloud Scheduler<br/>daily 07:00 Berlin] -->|triggers| B
     B -->|daily CSV| C[Cloud Storage<br/>raw bucket]
-    C -->|load job| D[BigQuery<br/>energy.generation_prices]
-    D --> E[SQL analysis<br/>& quality checks]
+    C -->|load job| D[Bronze<br/>generation_prices]
+    D --> E[Silver view<br/>stg_generation_prices]
+    E --> F[Gold view<br/>mart_daily_summary]
+    F --> G[Analysis<br/>& dashboard]
 ```
 
 **How it works:**
@@ -24,7 +26,14 @@ flowchart LR
 4. Loading is **idempotent**: rows for the same day are deleted before being reloaded, so re-running a day never creates duplicates.
 5. A **backfill script** loads historical data from 1 October 2025, when the European day-ahead market switched to 15-minute prices. API calls are retried automatically with increasing waits when the rate limit is reached (HTTP 429), and failed days are retried once at the end.
 
-**Infrastructure as Code:** all cloud resources (storage, BigQuery dataset, container registry, Cloud Run job, scheduler, service accounts and permissions) are defined with **Terraform** in [`terraform/`](terraform/). The deployed image version is controlled by a single variable (`image_tag`).
+**Data layers (medallion architecture):**
+- **Bronze** – `energy.generation_prices`: raw quarter-hourly data, as loaded from the API.
+- **Silver** – `energy.stg_generation_prices` ([SQL](sql/staging/stg_generation_prices.sql)): Berlin time, date, total wind and total renewable generation.
+- **Gold** – `energy.mart_daily_summary` ([SQL](sql/marts/mart_daily_summary.sql)): one row per day with average, min and max price, daily price spread, zero-price quarter-hours, solar and wind energy (GWh).
+
+Silver and gold are BigQuery views managed by Terraform: they are always up to date, with no extra processing step.
+
+**Infrastructure as Code:** all cloud resources (storage, BigQuery dataset and views, container registry, Cloud Run job, scheduler, service accounts and permissions) are defined with **Terraform** in [`terraform/`](terraform/). The deployed image version is controlled by a single variable (`image_tag`).
 
 **Security:** three dedicated service accounts follow the principle of least privilege:
 - `cloud-build-sa` builds the container image (read source, write image, write logs);
@@ -141,7 +150,7 @@ Note: the BigQuery table `generation_prices` is created by the first load job, n
 
 ## Roadmap
 
-- [ ] Daily summary table (average, min and max price, total wind and solar generation)
+- [x] Daily summary table (average, min and max price, total wind and solar generation)
 - [ ] Dashboard (Looker Studio or Power BI connected to BigQuery)
 - [ ] Email alert when the daily job fails (Cloud Monitoring)
 - [ ] Unit tests with `pytest`
@@ -201,6 +210,9 @@ Note: the BigQuery table `generation_prices` is created by the first load job, n
 - [WITH clause (CTE)](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax#with_clause) – quality check query
 - [GENERATE_DATE_ARRAY](https://cloud.google.com/bigquery/docs/reference/standard-sql/array_functions#generate_date_array) – list of expected days
 - [BigQuery pricing](https://cloud.google.com/bigquery/pricing) – on-demand queries, first 1 TiB per month free
+- [BigQuery views](https://cloud.google.com/bigquery/docs/views-intro) – silver and gold layers
+- [google_bigquery_table (view)](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_table) – views managed by Terraform
+- [Medallion architecture (Databricks)](https://www.databricks.com/glossary/medallion-architecture)
 
 ### Deployment & Automation
 - [Dockerfile reference](https://docs.docker.com/reference/dockerfile/) – containerizing the pipeline
