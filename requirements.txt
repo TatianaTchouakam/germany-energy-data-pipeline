@@ -1,5 +1,6 @@
 requests
 pandas
-ipykernelmatplotlib
 google-cloud-storage
 google-cloud-bigquery
+matplotlib
+ipykernel
