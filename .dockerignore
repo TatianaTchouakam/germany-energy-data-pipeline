@@ -1,0 +1,8 @@
+.git/
+.venv/
+data/
+notebooks/
+terraform/
+docs/
+__pycache__/
+*.ipynb

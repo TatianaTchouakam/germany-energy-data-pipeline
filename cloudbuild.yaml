@@ -1,0 +1,18 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - europe-west3-docker.pkg.dev/$PROJECT_ID/energy-pipeline/fetch-data:$_TAG
+      - .
+
+images:
+  - europe-west3-docker.pkg.dev/$PROJECT_ID/energy-pipeline/fetch-data:$_TAG
+
+substitutions:
+  _TAG: v1
+
+serviceAccount: projects/$PROJECT_ID/serviceAccounts/cloud-build-sa@$PROJECT_ID.iam.gserviceaccount.com
+
+options:
+  logging: CLOUD_LOGGING_ONLY
