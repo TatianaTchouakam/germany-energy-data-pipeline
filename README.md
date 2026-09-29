@@ -2,7 +2,9 @@
 
 Automated data pipeline for German electricity generation (wind, solar) and day-ahead prices, built on Google Cloud with Terraform, BigQuery and Cloud Run.
 
-Every morning, the pipeline fetches the previous day's data at 15-minute resolution, stores it in Cloud Storage and loads it into BigQuery, where it is analysed with SQL. The whole infrastructure is defined as code with Terraform.
+Every morning at 07:00 (Berlin time), the pipeline automatically fetches the previous day's data at 15-minute resolution, stores it in Cloud Storage and loads it into BigQuery, where it is analysed with SQL. The whole infrastructure is defined as code with Terraform.
+
+📊 **[Live dashboard (Looker Studio)](https://datastudio.google.com/reporting/0a416ce2-442e-45c9-a1d5-1c43b2747553)** – updated daily from BigQuery
 
 **Tech stack:** Python · pandas · SQL · Google Cloud (Cloud Storage, BigQuery, Cloud Run, Cloud Scheduler, Cloud Build, Artifact Registry, IAM) · Terraform · Docker · Git
 
