@@ -119,6 +119,20 @@ python ingestion/backfill.py --start 2025-10-01 --end 2026-09-27
 
 ## Key Insights
 
+### One year of German electricity data (1 October 2025 – 28 September 2026)
+
+Figures computed with [`sql/yearly_summary.sql`](sql/yearly_summary.sql) on 363 days of quarter-hourly data:
+
+- **Average day-ahead price:** 103.78 €/MWh (average of daily averages).
+- **609.5 hours at 0 €/MWh or below** (2,438 quarter-hours), the equivalent of more than 25 full days of free or negatively priced electricity.
+- **Lowest price:** −499.99 €/MWh on 1 May 2026, a public holiday in spring, almost at the market's minimum price of −500 €/MWh.
+- **Highest price:** 747.10 €/MWh on 24 June 2026.
+- **Renewable generation:** 142.1 TWh of wind and 82.7 TWh of solar. Over the year, wind produced almost twice as much energy as solar, while solar dominated in spring and summer.
+
+Negative prices happen when renewable generation exceeds demand, typically on sunny holidays and weekends with low consumption: producers pay to get their electricity consumed. With daily spreads reaching more than 700 €/MWh, flexibility (batteries, smart charging, heat pumps) has a strong economic value.
+
+*Figures as of 28 September 2026. The dataset grows by one day every morning.*
+
 ### Solar pushes the day-ahead price down to zero (21 September 2026)
 
 ![Day-ahead price vs. wind and solar generation in Germany, 21 September 2026](docs/images/price_vs_solar_2026-09-21.png)
