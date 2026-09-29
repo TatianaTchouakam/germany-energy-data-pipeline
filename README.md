@@ -153,7 +153,7 @@ Note: the BigQuery table `generation_prices` is created by the first load job, n
 ## Roadmap
 
 - [x] Daily summary table (average, min and max price, total wind and solar generation)
-- [ ] Dashboard (Looker Studio or Power BI connected to BigQuery)
+- [x] Dashboard (Looker Studio or Power BI connected to BigQuery)
 - [ ] Email alert when the daily job fails (Cloud Monitoring)
 - [ ] Unit tests with `pytest`
 - [ ] CI/CD with GitHub Actions (tests, `terraform fmt` and `terraform validate`)
@@ -236,6 +236,12 @@ Note: the BigQuery table `generation_prices` is created by the first load job, n
 - [matplotlib savefig](https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.savefig.html) – exporting the chart as PNG
 - [Images in GitHub Markdown](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#images) – embedding the chart in this README
 - [Mermaid diagrams on GitHub](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams) – architecture diagram
+
+### Dashboard
+- [Looker Studio: connect to BigQuery](https://support.google.com/looker-studio/answer/6370296)
+- [Looker Studio: data freshness](https://support.google.com/looker-studio/answer/7020039) – hourly refresh
+- [Looker Studio: data source credentials](https://support.google.com/looker-studio/answer/6371135) – viewers see the data through the owner's credentials
+
 
 ## Author
 
